@@ -33,12 +33,7 @@ const Product = sequelize.define('products', {
     timestamps: true,
 })
 
-Product.belongsTo(Category, {
-    foreignKey: 'categoryId',
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE'
-})
 
-Product.hasMany(Image)
+
 
 module.exports = Product

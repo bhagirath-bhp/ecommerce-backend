@@ -12,6 +12,7 @@ const Country = sequelize.define('countries', {
         allowNull: false
     }
 },{
+    timestamps: false,
     hooks:{
         beforeCreate: (country) => {
             country.countryName = country.countryName.toLowerCase()

@@ -1,6 +1,6 @@
 const sequelize = require('../db/db')
 const {DataTypes} = require('sequelize')
-const User = require('./User')
+const User = require('./user')
 
 const Address = sequelize.define('addresses', {
     addressId:{
@@ -26,12 +26,6 @@ const Address = sequelize.define('addresses', {
     }
 },{
     timestamps: true
-})
-
-Address.belongsTo(User,{
-    foreignKey: 'userId',
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE'
 })
 
 module.exports = Address

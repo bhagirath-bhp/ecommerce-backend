@@ -21,6 +21,7 @@ const Image = sequelize.define('images', {
         allowNull: false
     }
 }, {
+    timestamps: false,
     hooks:{
         beforeCreate: (image) => {
             image.imageName = image.imageName.replace(/\s/g, "").toLowerCase()
@@ -28,9 +29,5 @@ const Image = sequelize.define('images', {
     }
 })
 
-Image.belongsTo(Product,{
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE'
-})
 
 module.exports = Image

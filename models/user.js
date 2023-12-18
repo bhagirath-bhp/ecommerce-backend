@@ -41,6 +41,4 @@ const User = sequelize.define('users', {
     }
 })
 
-User.hasMany(Address)
-
 module.exports = User

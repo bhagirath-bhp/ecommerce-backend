@@ -13,13 +13,12 @@ const Category = sequelize.define('categories', {
         allowNull: false
     }
 },{
+    timestamps:false,
     hooks:{
         beforeCreate: (category) => {
             category.categoryName = category.categoryName.toLowerCase()
         }
     }
 })
-
-Category.hasMany(Product)
 
 module.exports = Category
