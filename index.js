@@ -2,6 +2,7 @@ const express = require('express')
 const cors = require('cors')
 const morgan = require('morgan')
 const fileUpload = require('express-fileupload')
+const helmet = require('helmet')
 const sequelize = require('./db/db.js')
 const userRoute = require('./routes/userRoutes.js')
 const productRoute = require('./routes/productRoutes.js')
@@ -11,6 +12,9 @@ const app = express()
 
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
+
+// security
+app.use(helmet())
 
 // logging
 app.use(morgan("tiny"))
