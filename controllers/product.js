@@ -33,9 +33,6 @@ Variant.belongsTo(Product,{
 })
 
 exports.addProduct = async(req,res) => {
- 
-    const t = await sequelize.transaction()
-
     try {
         const {name,categoryId,description,quantity,price} = req.body 
 
@@ -45,7 +42,7 @@ exports.addProduct = async(req,res) => {
             description,
             quantity,
             price
-        }, {transaction: t})
+        })
 
         if(req.files){
             const img = await uploadImages(res,req.files.images)
@@ -54,15 +51,13 @@ exports.addProduct = async(req,res) => {
                     imageName: image.key,
                     imageURL: image.url,
                     productId: product.productId
-                }, {transaction:t})
+                })
             });
         }
-
-        await t.commit()
         return res.status(200).json("product added")
     } catch (error) {
         console.error(error);
-        await t.rollback()
+        t.rollback()
         return res.status(500).json("Internal Server Error")
     }
 }
