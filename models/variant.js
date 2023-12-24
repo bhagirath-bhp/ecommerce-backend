@@ -21,6 +21,9 @@ const Variant = sequelize.define('variants',{
     },
     productId:{
         type: DataTypes.INTEGER
+    },
+    quantity:{
+        type:DataTypes.INTEGER
     }
 },{
     timestamps: true

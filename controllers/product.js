@@ -5,7 +5,8 @@ const {uploadImages} = require('../utils/uploadImage')
 const Image = require('../models/image')
 const Variant = require('../models/variant');
 const sequelize = require('../db/db');
-const {deleteImage} = require('../utils/deleteImage')
+const {deleteImage} = require('../utils/deleteImage');
+const VariantImages = require('../models/variantImage');
 
 Category.hasMany(Product,{foreignKey:'categoryId'})
 
@@ -25,16 +26,48 @@ Image.belongsTo(Product,{
   onUpdate: 'CASCADE'
 })
 
-Product.hasMany(Variant)
+Product.hasMany(Variant,{
+    foreignKey: 'productId'
+})
 
 Variant.belongsTo(Product,{
   foreignKey: 'productId',
   onDelete: 'CASCADE',
 })
 
+Variant.hasMany(VariantImages,{
+    foreignKey: 'variantId'
+})
+
+VariantImages.belongsTo(Variant,{
+    foreignKey:'variantId'
+})
+
 exports.addProduct = async(req,res) => {
     try {
         const {name,categoryId,description,quantity,price} = req.body 
+
+        if(req.body.isVariant){
+            const product = await Variant.create({
+                name,
+                description,
+                price,
+                quantity,
+                productId: req.body.productId
+            })
+
+            if(req.files){
+                const img = await uploadImages(res,req.files.images)
+                img.forEach(async(image) => {
+                    await VariantImages.create({
+                        imageName: image.key,
+                        imageURL: image.url,
+                        variantId: product.variantId
+                    })
+                });
+            }
+            return res.status(200).json("variant added")
+        }
 
         const product = await Product.create({
             name,

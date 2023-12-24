@@ -21,6 +21,10 @@ module.exports = {
         type: Sequelize.DECIMAL(10,2),
         allowNull: false,
       },
+      quantity:{
+        type: Sequelize.INTEGER,
+        allowNull:false
+      },
       productId:{
         type: Sequelize.INTEGER,
         references:{
