@@ -68,8 +68,9 @@ exports.getWishlist = async(req,res) => {
                                 attributes:['imageURL']
                             }
                         ]
-                    }
-                ]
+                    },
+                ],
+                attributes:['wishlistId']
             })
             return res.status(200).json(items)
         }

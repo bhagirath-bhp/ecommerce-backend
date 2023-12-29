@@ -1,6 +1,5 @@
 const sequelize = require('../db/db')
 const {DataTypes} = require('sequelize')
-const Product = require('./product')
 
 const Category = sequelize.define('categories', {
     categoryId:{
@@ -11,7 +10,7 @@ const Category = sequelize.define('categories', {
     categoryName: {
         type:DataTypes.STRING,
         allowNull: false
-    }
+    },
 },{
     timestamps:false,
     hooks:{

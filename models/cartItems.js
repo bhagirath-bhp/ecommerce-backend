@@ -14,9 +14,6 @@ const CartItems = sequelize.define('cartitems',{
         type: DataTypes.INTEGER,
         allowNull: false
     },
-   variantId:{
-        type: DataTypes.INTEGER
-    },
     quantity:{
         type: DataTypes.INTEGER,
         allowNull:false,

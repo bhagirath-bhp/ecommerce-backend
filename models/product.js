@@ -1,7 +1,5 @@
 const sequelize = require('../db/db')
 const {DataTypes} = require('sequelize')
-const Category = require('./category')
-const Image = require('./image')
 
 const Product = sequelize.define('products', {
     productId:{
@@ -15,7 +13,9 @@ const Product = sequelize.define('products', {
     },
     categoryId:{
         type: DataTypes.INTEGER,
-        allowNull: false
+    },
+    collectionId:{
+        type: DataTypes.INTEGER
     },
     description: {
         type: DataTypes.TEXT,
@@ -23,11 +23,9 @@ const Product = sequelize.define('products', {
     },
     quantity: {
         type: DataTypes.INTEGER,
-        allowNull: false,
     },
     price:{
         type: DataTypes.DECIMAL(10,2),
-        allowNull: false
     }
 },{
     timestamps: true,

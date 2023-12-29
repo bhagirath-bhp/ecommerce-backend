@@ -3,10 +3,11 @@ const Category = require('../models/category');
 const Product = require('../models/product')
 const {uploadImages} = require('../utils/uploadImage')
 const Image = require('../models/image')
-const Variant = require('../models/variant');
+const Collection = require('../models/collection')
 const sequelize = require('../db/db');
 const {deleteImage} = require('../utils/deleteImage');
-const VariantImages = require('../models/variantImage');
+
+Collection.hasMany(Product,{foreignKey: 'collectionId'})
 
 Category.hasMany(Product,{foreignKey:'categoryId'})
 
@@ -26,52 +27,15 @@ Image.belongsTo(Product,{
   onUpdate: 'CASCADE'
 })
 
-Product.hasMany(Variant,{
-    foreignKey: 'productId'
-})
-
-Variant.belongsTo(Product,{
-  foreignKey: 'productId',
-  onDelete: 'CASCADE',
-})
-
-Variant.hasMany(VariantImages,{
-    foreignKey: 'variantId'
-})
-
-VariantImages.belongsTo(Variant,{
-    foreignKey:'variantId'
-})
 
 exports.addProduct = async(req,res) => {
     try {
-        const {name,categoryId,description,quantity,price} = req.body 
-
-        if(req.body.isVariant){
-            const product = await Variant.create({
-                name,
-                description,
-                price,
-                quantity,
-                productId: req.body.productId
-            })
-
-            if(req.files){
-                const img = await uploadImages(res,req.files.images)
-                img.forEach(async(image) => {
-                    await VariantImages.create({
-                        imageName: image.key,
-                        imageURL: image.url,
-                        variantId: product.variantId
-                    })
-                });
-            }
-            return res.status(200).json("variant added")
-        }
+        const {name,categoryId,collectionId,description,quantity,price} = req.body 
 
         const product = await Product.create({
             name,
             categoryId,
+            collectionId,
             description,
             quantity,
             price
@@ -127,6 +91,47 @@ exports.getCategories = async(req,res) => {
     }
 }
 
+exports.addCollection = async(req,res) => {
+    try {
+        const {name} = req.body 
+
+        const existing = await Collection.findOne({
+            where:{
+                name:{
+                    [Op.iLike] : `%${name}`
+                }
+            }
+        })
+
+        if(existing){
+            return res.status(400).json("collection already exists")
+        }
+
+        await Collection.create({
+            name
+        })
+
+        return res.status(200).json("collection created")
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json("Internal Server Error")
+    }
+}
+
+exports.getCollection = async(req,res) => {
+    try {
+        const collections = await Collection.findAll()
+        if(!collections){
+            return res.status(400).json("no collections found")
+        }
+
+        return res.status(200).json(collections)
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json("Internal Server Error")
+    }
+}
+
 exports.getAllProducts = async(req,res) => {
     try {
         const products = await Product.findAll({
@@ -139,7 +144,8 @@ exports.getAllProducts = async(req,res) => {
                     model:Image,
                     attributes:['imageURL']
                 }
-            ]
+            ],
+            attributes:['productId','name','description','quantity','price']
         })
 
         if(!products){
@@ -166,7 +172,8 @@ exports.getAProduct = async(req,res) => {
                     model: Image,
                     attributes:['imageURL']
                 }
-            ]
+            ],
+            attributes:['productId','name','description','quantity','price']
         })
 
         if(!product){
@@ -184,7 +191,7 @@ exports.updateProduct = async(req,res) => {
     const t = await sequelize.transaction()
     try {
         const {id} = req.params 
-        const {name,price,description,quantity,categoryId} = req.body
+        const {name,price,description,quantity,categoryId,collectionId} = req.body
 
         const product = await Product.findByPk(id,{transaction:t})
         
@@ -192,7 +199,7 @@ exports.updateProduct = async(req,res) => {
             return res.status(404).json("product not found!")
         }
         await Product.update(
-            {name,price,description,quantity,categoryId},
+            {name,price,description,quantity,categoryId,collectionId},
             {where: {productId: id}, transaction: t}
         )
 
@@ -252,6 +259,28 @@ exports.deleteProduct = async(req,res) => {
     } catch (error) {
         console.error(error);
         await t.rollback()
+        return res.status(500).json("Internal Server Error")
+    }
+}
+
+exports.getProdutsByCategory = async(req,res) => {
+    try {
+        const {id} = req.params 
+
+        const products = await Product.findAll({
+            where:{
+                categoryId: id
+            },
+            attributes: ['productId','name','price','quantity','description']
+        })
+
+        if(products.length <= 0){
+            return res.status(404).json("no products found")
+        }
+
+        return res.status(200).json(products)
+    } catch (error) {
+        console.error(error);
         return res.status(500).json("Internal Server Error")
     }
 }

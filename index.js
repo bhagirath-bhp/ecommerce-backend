@@ -3,6 +3,7 @@ const cors = require('cors')
 const morgan = require('morgan')
 const fileUpload = require('express-fileupload')
 const helmet = require('helmet')
+const cookieParser = require('cookie-parser')
 const sequelize = require('./db/db.js')
 const userRoute = require('./routes/userRoutes.js')
 const productRoute = require('./routes/productRoutes.js')
@@ -15,6 +16,8 @@ app.use(express.urlencoded({extended:true}))
 
 // security
 app.use(helmet())
+
+app.use(cookieParser())
 
 // logging
 app.use(morgan("tiny"))

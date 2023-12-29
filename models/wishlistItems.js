@@ -13,7 +13,6 @@ const WishlistItems = sequelize.define('wishlistitems',{
     },
     productId:{
         type: DataTypes.INTEGER,
-        allowNull: false,
     }
 },{
     timestamps:false

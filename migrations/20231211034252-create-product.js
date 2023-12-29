@@ -15,10 +15,18 @@ module.exports = {
       },
       categoryId:{
         type: Sequelize.INTEGER,
-        allowNull: false,
         references:{
           model: 'categories',
           key: 'categoryId'
+        },
+        onDelete: 'cascade',
+        onUpdate: 'cascade'
+      },
+      collectionId:{
+        type:Sequelize.INTEGER,
+        references:{
+          model: 'collections',
+          key: 'collectionId'
         },
         onDelete: 'cascade',
         onUpdate: 'cascade'
@@ -29,11 +37,9 @@ module.exports = {
       },
       quantity: {
         type: Sequelize.INTEGER,
-        allowNull: false,
       },
       price: {
         type: Sequelize.DECIMAL(10,2),
-        allowNull: false
       },
       createdAt:{
         type: Sequelize.DATE,

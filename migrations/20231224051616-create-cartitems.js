@@ -26,13 +26,6 @@ module.exports = {
         onDelete:'cascade',
         onUpdate:'cascade'
       },
-      variantId:{
-        type:Sequelize.INTEGER,
-        references:{
-          model:'variants',
-          key:'variantId',
-        },
-      },
       quantity:{
         type:Sequelize.INTEGER,
         allowNull: false
