@@ -21,7 +21,6 @@ const OrderItem = sequelize.define('orderitems',{
     },
     price:{
         type: DataTypes.DECIMAL(10,2),
-        allowNull:false
     }
 },{timestamps:true})
 

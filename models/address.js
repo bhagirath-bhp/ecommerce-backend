@@ -17,6 +17,9 @@ const Address = sequelize.define('addresses', {
     countryId:{
         type:DataTypes.INTEGER
     },
+    city:{
+        type: DataTypes.STRING,
+    },
     zipCode:{
         type: DataTypes.STRING
     },

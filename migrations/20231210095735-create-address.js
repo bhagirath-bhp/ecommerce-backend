@@ -27,6 +27,9 @@ module.exports = {
       zipCode:{
         type:Sequelize.STRING
       },
+      city:{
+        type:Sequelize.STRING,
+      },
       userId:{
         type: Sequelize.INTEGER,
         allowNull: false,

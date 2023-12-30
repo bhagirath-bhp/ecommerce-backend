@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser')
 const sequelize = require('./db/db.js')
 const userRoute = require('./routes/userRoutes.js')
 const productRoute = require('./routes/productRoutes.js')
+const orderRoute = require('./routes/orderRoutes.js')
 require('dotenv').config()
 
 const app = express()
@@ -36,6 +37,7 @@ app.use(cors({
 
 app.use("/api/v1",userRoute)
 app.use("/api/v1",productRoute)
+app.use("/api/v1",orderRoute)
 
 app.listen(process.env.PORT, () => {
     sequelize.authenticate()
