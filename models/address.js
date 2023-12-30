@@ -20,6 +20,9 @@ const Address = sequelize.define('addresses', {
     city:{
         type: DataTypes.STRING,
     },
+    state:{
+        type:DataTypes.STRING,
+    },
     zipCode:{
         type: DataTypes.STRING
     },

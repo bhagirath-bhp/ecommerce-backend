@@ -14,7 +14,6 @@ const Category = require('./category')
 const Country = require('./country')
 const Image = require('./image')
 const Product = require('./product')
-const Variant = require('./variant')
 
 User.hasMany(Address)
 
@@ -31,31 +30,6 @@ Address.belongsTo(Country,{
   onDelete: 'CASCADE',
   onUpdate: 'CASCADE'
 })
-
-// Category.hasMany(Product)
-
-// Product.belongsTo(Category, {
-//   foreignKey: 'categoryId',
-//   onDelete: 'CASCADE',
-//   onUpdate: 'CASCADE'
-// })
-
-// Product.hasMany(Image,{
-//   foreignKey: 'productId'
-// })
-
-// Image.belongsTo(Product,{
-//   foreignKey:'productId',
-//   onDelete: 'CASCADE',
-//   onUpdate: 'CASCADE'
-// })
-
-// Product.hasMany(Variant)
-
-// Variant.belongsTo(Product,{
-//   foreignKey: 'productId',
-//   onDelete: 'CASCADE',
-// })
 
 let sequelize;
 if (config.use_env_variable) {

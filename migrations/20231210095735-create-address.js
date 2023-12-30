@@ -30,6 +30,9 @@ module.exports = {
       city:{
         type:Sequelize.STRING,
       },
+      state:{
+        type:Sequelize.STRING,
+      },
       userId:{
         type: Sequelize.INTEGER,
         allowNull: false,
