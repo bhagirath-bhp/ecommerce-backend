@@ -1,21 +1,21 @@
 {
   "development": {
     "username": "postgres",
-    "password": "password",
+    "password": "postgres",
     "database": "test",
-    "host": "127.0.0.1",
+    "host": "db",
     "dialect": "postgres"
   },
   "test": {
     "username": "postgres",
-    "password": "password",
+    "password": "postgres",
     "database": "test",
-    "host": "127.0.0.1",
+    "host": "db",
     "dialect": "postgres"
   },
   "username": "postgres",
-  "password": "password",
+  "password": "postgres",
   "database": "drakina",
-  "host": "127.0.0.1",
+  "host": "db",
   "dialect": "postgres"
 }

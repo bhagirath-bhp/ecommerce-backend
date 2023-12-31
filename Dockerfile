@@ -16,7 +16,7 @@ COPY . .
 CMD npm run dev
 
 FROM base as prod
-ENV NODE_ENV production
+ENV NODE_ENV development
 RUN --mount=type=bind,source=package.json,target=package.json \
     --mount=type=bind,source=package-lock.json,target=package-lock.json \
     --mount=type=cache,target=/root/.npm \

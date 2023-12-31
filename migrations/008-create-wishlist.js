@@ -23,5 +23,6 @@ module.exports = {
 
   async down (queryInterface, Sequelize) {
    return queryInterface.dropTable('wishlists')
-  }
+  },
+  order:8
 };

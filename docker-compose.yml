@@ -1,21 +1,4 @@
 services:
-  server:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    environment:
-      - DB_NAME=test
-      - DB_HOST=localhost
-      - DB_USER=postgres
-      - DB_PASSWORD=password
-      - DB_PORT=5432
-      - PORT=3000
-    ports:
-      - 3000:3000
-    depends_on:
-      - db
-    networks:
-      - drakina
   db:
     image: postgres:latest
     restart: always
@@ -23,11 +6,31 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=test
     expose:
       - 5432
     networks:
       - drakina
+  server:
+    depends_on:
+        - db
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - DB_NAME=test
+      - DB_HOST=db
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_PORT=5432
+      - PORT=3000
+    ports:
+      - 3000:3000
+    networks:
+      - drakina
+    command: sh -c "npm run migrate && npm start"
 volumes:
    db-data:
 networks:

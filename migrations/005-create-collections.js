@@ -3,13 +3,13 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    await queryInterface.createTable('categories', {
-      categoryId:{
+    await queryInterface.createTable('collections', {
+      collectionId:{
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true
       },
-      categoryName: {
+      name: {
         type: Sequelize.STRING,
         allowNull: false
       }
@@ -17,6 +17,7 @@ module.exports = {
   },
 
   async down (queryInterface, Sequelize) {
-    return queryInterface.dropTable('categories')
-  }
+    return queryInterface.dropTable('collections')
+  },
+  order:5,
 };
