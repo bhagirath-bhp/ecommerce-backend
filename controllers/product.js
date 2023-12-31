@@ -271,7 +271,13 @@ exports.getProdutsByCategory = async(req,res) => {
             where:{
                 categoryId: id
             },
-            attributes: ['productId','name','price','quantity','description']
+            attributes: ['productId','name','price','quantity','description'],
+            include:[
+                {
+                    model: Image,
+                    attributes: ["imageURL"]
+                }
+            ]
         })
 
         if(products.length <= 0){
