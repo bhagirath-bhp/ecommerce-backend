@@ -54,7 +54,6 @@ exports.addProduct = async(req,res) => {
         return res.status(200).json("product added")
     } catch (error) {
         console.error(error);
-        t.rollback()
         return res.status(500).json("Internal Server Error")
     }
 }
@@ -285,6 +284,31 @@ exports.getProdutsByCategory = async(req,res) => {
         }
 
         return res.status(200).json(products)
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json("Internal Server Error")
+    }
+}
+
+exports.getProductsByCollection = async(req,res) => {
+    try {
+        const {id} = req.params 
+        const products = await Product.findAll({
+            where: {
+                collectionId: id
+            },
+            attributes:['productId','name', 'description','quantity','price'],
+            include:[{
+                model: Image,
+                attributes:['imageURL','imageName']
+            }]
+        })
+
+        if(!products){
+            return res.status(200).json("no products in the collection")
+        }
+
+        return res.status(200).json({"products":products})
     } catch (error) {
         console.error(error);
         return res.status(500).json("Internal Server Error")
