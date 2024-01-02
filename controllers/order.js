@@ -8,6 +8,7 @@ const User = require('../models/user')
 const CartItems = require('../models/cartItems')
 
 Order.belongsTo(User,{foreignKey: 'userId'})
+Order.hasMany(OrderItem,{foreignKey: 'orderId'})
 OrderItem.belongsTo(Order,{foreignKey:'orderId'})
 OrderItem.belongsTo(Product,{foreignKey: 'productId'})
 
@@ -40,19 +41,20 @@ exports.addOrder = async(req,res) => {
         const order = await Order.create({userId}, {transaction:t})
 
         for(const item of cartItems){
-            console.log(item.product.quantity, item.quantity);
+            console.log("Product quantity:",item.product.quantity,"\nCart quantity:",item.quantity);
             // console.log("hello");
             const product = await Product.findByPk(item.product.productId,{
                 lock: t.LOCK.UPDATE
             })
 
             if(!product || item.product.quantity < item.quantity){
-                if(item.product.quantity == null) continue
+                // if(item.product.quantity == null) continue
                 return res.status(400).json("insufficient quantity")
             }
 
-            if(!item.quantity.price) continue
-            amount += item.quantity * item.quantity.price
+            if(item.product.price){
+                amount += item.quantity * item.product.price
+            }
 
             await Product.update(
                 {quantity: item.product.quantity - item.quantity},
@@ -64,15 +66,51 @@ exports.addOrder = async(req,res) => {
                 productId: item.product.productId,
                 quantity: item.quantity,
                 price: item.product.price,
-                amount
             }, {transaction: t})
         }
+
+        order.amount = amount
+        // order.totalAmount = amount + 
+        await order.save({transaction:t})
 
         
         await Cart.destroy({where:{userId}, transaction:t})
         await t.commit()
         
         return res.status(200).json("order placed");
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json("Internal Server Error")
+    }
+}
+
+exports.getAllOrdersForAUser = async(req,res)=> {
+    try {
+        const {userId} = req.params
+        const orders = await Order.findAll({
+            where:{
+                userId
+            },
+            include:[
+                {
+                    model: OrderItem,
+                    attributes:['productId','quantity','price'],
+                    include:[
+                        {
+                            model: Product,
+                            attributes: ['name']
+                        }
+                    ]
+                }
+            ],
+            attributes:['orderId','amount','totalAmount','shippingAmount',]
+        })
+        
+        if(!orders){
+            return res.status(400).json("no orders found")
+        }
+
+        return res.status(200).json(orders)
     } catch (error) {
         console.error(error);
         return res.status(500).json("Internal Server Error")

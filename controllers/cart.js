@@ -38,17 +38,10 @@ exports.addToCart = async(req,res) => {
             const [cartItem] = await CartItems.findOrCreate({
                 where:{
                     cartId: newCart.cartId,
-                    productId
-                },
-                defaults:{
-                    quantity: 1
+                    productId,
+                    quantity: quantity > 1 ? quantity : 1
                 }
             })
-
-            if (!cartItem.isNewRecord) {
-                cartItem.quantity += quantity || 1;
-                await cartItem.save();
-            }
 
             return res.status(200).json("added to cart")
         }
@@ -56,17 +49,10 @@ exports.addToCart = async(req,res) => {
         const [cartItem] = await CartItems.findOrCreate({
             where:{
                 cartId: cart.cartId,
-                productId
-            },
-            defaults:{
-                quantity: 1
+                productId,
+                quantity: quantity > 1 ? quantity : 1
             }
         })
-
-        if (!cartItem.isNewRecord) {
-            cartItem.quantity += quantity || 1;
-            await cartItem.save();
-        }
 
         return res.status(200).json("added to cart")
         

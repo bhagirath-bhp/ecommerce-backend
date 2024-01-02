@@ -12,7 +12,8 @@ const cookieToken = (user,res) => {
 
     res.status(200).cookie('token',token,options).json({
         success: true,
-        token
+        token,
+        userId: user.userId
     })
 }
 

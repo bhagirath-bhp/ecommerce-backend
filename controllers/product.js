@@ -300,7 +300,7 @@ exports.getProductsByCollection = async(req,res) => {
             attributes:['productId','name', 'description','quantity','price'],
             include:[{
                 model: Image,
-                attributes:['imageURL','imageName']
+                attributes:['imageURL']
             }]
         })
 
@@ -308,7 +308,7 @@ exports.getProductsByCollection = async(req,res) => {
             return res.status(200).json("no products in the collection")
         }
 
-        return res.status(200).json({"products":products})
+        return res.status(200).json(products)
     } catch (error) {
         console.error(error);
         return res.status(500).json("Internal Server Error")
