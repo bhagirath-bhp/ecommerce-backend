@@ -8,6 +8,7 @@ const sequelize = require('./db/db.js')
 const userRoute = require('./routes/userRoutes.js')
 const productRoute = require('./routes/productRoutes.js')
 const orderRoute = require('./routes/orderRoutes.js')
+const ratingRoute = require('./routes/ratingRoutes.js')
 require('dotenv').config()
 
 const app = express()
@@ -38,6 +39,7 @@ app.use(cors({
 app.use("/api/v1",userRoute)
 app.use("/api/v1",productRoute)
 app.use("/api/v1",orderRoute)
+app.use("/api/v1",ratingRoute)
 
 app.listen(process.env.PORT, () => {
     sequelize.authenticate()

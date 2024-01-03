@@ -41,5 +41,6 @@ module.exports = {
 
   async down (queryInterface, Sequelize) {
     return await queryInterface.dropTable('reviews')
-  }
+  },
+  order:15
 };
