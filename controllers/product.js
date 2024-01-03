@@ -38,7 +38,7 @@ exports.addProduct = async(req,res) => {
             collectionId,
             description,
             quantity,
-            price
+            price: price>0 ? price : 0
         })
 
         if(req.files){
@@ -131,32 +131,55 @@ exports.getCollection = async(req,res) => {
     }
 }
 
-exports.getAllProducts = async(req,res) => {
+exports.getAllProducts = async (req, res) => {
     try {
-        const products = await Product.findAll({
-            include:[
+        const page = parseInt(req.query.page) || 1;
+        const pageSize = parseInt(req.query.pageSize) || 6;
+        const offset = (page - 1) * pageSize;
+
+        const sortBy = req.query.sortBy || 'price'
+        const sortOrder = req.query.sortOrder || 'ASC'
+
+        const products = await Product.findAndCountAll({
+            include: [
                 {
                     model: Category,
-                    attributes:['categoryName']
+                    attributes: ['categoryName'],
                 },
                 {
-                    model:Image,
-                    attributes:['imageURL']
-                }
+                    model: Image,
+                    attributes: ['imageURL'],
+                },
             ],
-            attributes:['productId','name','description','quantity','price']
-        })
+            attributes: ['productId', 'name', 'description', 'quantity', 'price'],
+            order: [[sortBy,sortOrder]],
+            limit: pageSize,
+            offset: offset,
+        });
 
-        if(!products){
-            return res.status(400).json("no products found")
+        if (!products || products.count === 0) {
+            return res.status(404).json("No products found");
         }
 
-        return res.status(200).json(products)
+        const totalPages = Math.ceil(products.count / pageSize);
+
+        const response = {
+            products: products.rows,
+            pagination: {
+                page: page,
+                pageSize: pageSize,
+                totalProducts: products.count,
+                totalPages: totalPages,
+            },
+        };
+
+        return res.status(200).json(response);
     } catch (error) {
         console.error(error);
-        return res.status(500).json("Internal Server Error")
+        return res.status(500).json("Internal Server Error");
     }
-}
+};
+
 
 exports.getAProduct = async(req,res) => {
     try {

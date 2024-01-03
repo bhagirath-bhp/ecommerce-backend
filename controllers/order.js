@@ -6,9 +6,12 @@ const Product = require('../models/product')
 const Cart = require('../models/cart')
 const User = require('../models/user')
 const CartItems = require('../models/cartItems')
+const Address = require('../models/address')
 
 Order.belongsTo(User,{foreignKey: 'userId'})
 Order.hasMany(OrderItem,{foreignKey: 'orderId'})
+Order.belongsTo(Address,{foreignKey: "addressId"})
+Address.hasMany(Order,{foreignKey: 'addressId'})
 OrderItem.belongsTo(Order,{foreignKey:'orderId'})
 OrderItem.belongsTo(Product,{foreignKey: 'productId'})
 
@@ -52,10 +55,6 @@ exports.addOrder = async(req,res) => {
                 return res.status(400).json("insufficient quantity")
             }
 
-            if(item.product.price){
-                amount += item.quantity * item.product.price
-            }
-
             await Product.update(
                 {quantity: item.product.quantity - item.quantity},
                 {where: {productId: item.product.productId}, transaction:t}
@@ -69,9 +68,7 @@ exports.addOrder = async(req,res) => {
             }, {transaction: t})
         }
 
-        order.amount = amount
-        // order.totalAmount = amount + 
-        await order.save({transaction:t})
+        
 
         
         await Cart.destroy({where:{userId}, transaction:t})

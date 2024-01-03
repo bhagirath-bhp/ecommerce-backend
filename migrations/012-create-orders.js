@@ -18,9 +18,6 @@ module.exports = {
         },
         onDelete: 'cascade'
       },
-      tax:{
-        type: Sequelize.DECIMAL(10,2)
-      },
       amount:{
         type: Sequelize.DECIMAL(10,2),
       },
@@ -32,6 +29,17 @@ module.exports = {
       },
       stripePaymentId:{
         type:Sequelize.STRING,
+      },
+      addressId:{
+        type: Sequelize.INTEGER,
+        references:{
+          model: 'addresses',
+          key: 'addressId'
+        }
+      },
+      payment_status:{
+        type: Sequelize.STRING,
+        defaultValue: 'pending'
       },
       createdAt:{
         type: Sequelize.DATE,
