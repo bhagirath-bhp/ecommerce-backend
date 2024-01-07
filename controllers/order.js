@@ -84,8 +84,9 @@ exports.addOrder = async(req,res) => {
 
         const id = await createSession(lineItems,order.orderId)
 
-        order.stripePaymentId = id
-        await order.save()
+        await Order.update({
+            stripePaymentId: id
+        },{where:{orderId: order.orderId},transaction:t})
 
         await Cart.destroy({where:{userId}, transaction:t})
         await t.commit()
