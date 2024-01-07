@@ -23,7 +23,7 @@ exports.createSession = async(line_items,id) => {
                         }
                     },
                     fixed_amount:{
-                        amount:5*100,
+                        amount:100*100,
                         currency:"inr"
                     },
                     type: 'fixed_amount'

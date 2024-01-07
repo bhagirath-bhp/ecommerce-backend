@@ -8,6 +8,7 @@ const User = require('../models/user')
 const CartItems = require('../models/cartItems')
 const Address = require('../models/address')
 const { createSession } = require('../utils/payment')
+const stripe = require('stripe')(process.env.STRIPE_SK)
 
 Order.belongsTo(User,{foreignKey: 'userId'})
 Order.hasMany(OrderItem,{foreignKey: 'orderId'})
@@ -117,7 +118,7 @@ exports.getAllOrdersForAUser = async(req,res)=> {
                     ]
                 }
             ],
-            attributes:['orderId','amount','totalAmount','shippingAmount',]
+            attributes:['orderId','amount','totalAmount','shippingAmount','stripePaymentId']
         })
         
         if(!orders){
@@ -125,6 +126,31 @@ exports.getAllOrdersForAUser = async(req,res)=> {
         }
 
         return res.status(200).json(orders)
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json("Internal Server Error")
+    }
+}
+
+exports.success = async(req,res) => {
+    try {
+        const {orderid} = req.query 
+        const order = await Order.findByPk(orderid)
+
+        if(!order) return res.status(400).json("order not found")
+
+        const stripeId = String(order.stripePaymentId)
+
+        const session = await stripe.checkout.sessions.retrieve(stripeId)
+        
+        await Order.update({
+            amount: session?.amount_subtotal/100,
+            shippingAmount: session?.shipping_cost.amount_total,
+            totalAmount: session?.amount_total/100,
+            payment_status: session?.status
+        },{where:{orderId: id}})
+
+        return res.status(200).json("succesful payment")
     } catch (error) {
         console.error(error);
         return res.status(500).json("Internal Server Error")
