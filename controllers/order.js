@@ -137,6 +137,8 @@ exports.success = async(req,res) => {
         const {orderid} = req.query 
         const order = await Order.findByPk(orderid)
 
+        console.log(order);
+
         if(!order) return res.status(400).json("order not found")
 
         const stripeId = String(order.stripePaymentId)
@@ -148,7 +150,7 @@ exports.success = async(req,res) => {
             shippingAmount: session?.shipping_cost.amount_total,
             totalAmount: session?.amount_total/100,
             payment_status: session?.status
-        },{where:{orderId: id}})
+        },{where:{orderId: orderid}})
 
         return res.status(200).json("succesful payment")
     } catch (error) {
