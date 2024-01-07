@@ -13,7 +13,10 @@ const Review = sequelize.define('reviews',{
     productId:{
         type: DataTypes.INTEGER,
     },
-    description:{
+    rating:{
+        type: DataTypes.DECIMAL(10,2)
+    },
+    comment:{
         type: DataTypes.TEXT
     }
 },{timestamps: true})

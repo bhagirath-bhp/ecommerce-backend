@@ -25,7 +25,10 @@ module.exports = {
         },
         onDelete: 'cascade'
       },
-      description:{
+      rating:{
+        type:Sequelize.DECIMAL(10,2)
+      },
+      comment:{
         type:Sequelize.TEXT,
       },
       createdAt:{

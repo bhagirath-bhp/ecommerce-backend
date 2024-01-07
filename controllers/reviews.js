@@ -1,37 +1,37 @@
-const Rating = require('../models/rating')
+const Review = require('../models/review')
 const User = require('../models/user')
 const Product = require('../models/product')
 
-Product.hasMany(Rating,{foreignKey:'productId'})
-User.hasOne(Rating,{foreignKey: 'userId'})
+Product.hasMany(Review,{foreignKey: 'productId'})
+User.hasOne(Review,{foreignKey: 'userId'})
 
 exports.addRating = async(req,res) => {
     try {
-        const {value,userId,productId} = req.body
-        const exists = await Rating.findOne({
+        const {userId,productId,rating,comment} = req.body 
+
+        const exists = await Review.findOne({
             where:{
                 userId,
                 productId
             }
         })
 
-        if(value > 5 || value < 1){
-            return res.status(500).json("value should be between 1 and 5")
-        }
-
         if(exists){
-            exists.value = value;
+            exists.rating = rating,
+            exists.comment = comment
             await exists.save()
-            return res.status(200).json("rating updated")
+
+            return res.status(200).json("review updated")
         }
 
-        await Rating.create({
+        await Review.create({
             userId,
             productId,
-            value
+            comment,
+            rating
         })
 
-        return res.status(200).json("rating added")
+        return res.status(200).json("review added")
     } catch (error) {
         console.error(error);
         return res.status(500).json("Internal Server Error")
@@ -41,16 +41,19 @@ exports.addRating = async(req,res) => {
 exports.removeRating = async(req,res) => {
     try {
         const {userId,productId} = req.body 
-        const rating = await Rating.destroy({
+
+        const review = await Review.findOne({
             where:{
                 userId,
                 productId
             }
         })
 
-        if(!rating) return res.status(404).json("no rating found")
+        if(!review) return res.status(404).json("no review found")
 
-        return res.status(200).json("rating deleted")
+        await review.destroy()
+
+        return res.status(200).json("review deleted")
     } catch (error) {
         console.error(error);
         return res.status(500).json("Internal Server Error")

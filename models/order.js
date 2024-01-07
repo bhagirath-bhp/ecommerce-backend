@@ -11,9 +11,6 @@ const Order = sequelize.define('orders',{
         type:DataTypes.INTEGER,
         allowNull: false,
     },
-    tax:{
-        type: DataTypes.DECIMAL(10,2)
-    },
     amount:{
         type:DataTypes.DECIMAL(10,2)
     },

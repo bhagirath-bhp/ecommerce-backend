@@ -7,6 +7,7 @@ const Cart = require('../models/cart')
 const User = require('../models/user')
 const CartItems = require('../models/cartItems')
 const Address = require('../models/address')
+const { createSession } = require('../utils/payment')
 
 Order.belongsTo(User,{foreignKey: 'userId'})
 Order.hasMany(OrderItem,{foreignKey: 'orderId'})
@@ -20,7 +21,6 @@ exports.addOrder = async(req,res) => {
         isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE
     })
     try {
-        let amount=0;
         const {userId} = req.body
         const cart = await Cart.findOne({
             where: {userId},
@@ -42,6 +42,8 @@ exports.addOrder = async(req,res) => {
         })
 
         const order = await Order.create({userId}, {transaction:t})
+
+        let lineItems=[]
 
         for(const item of cartItems){
             console.log("Product quantity:",item.product.quantity,"\nCart quantity:",item.quantity);
@@ -66,15 +68,29 @@ exports.addOrder = async(req,res) => {
                 quantity: item.quantity,
                 price: item.product.price,
             }, {transaction: t})
+
+            lineItems.push({
+                quantity: item.quantity,
+                price_data:{
+                    currency: "inr",
+                    product_data:{
+                        name: product.name
+                    },
+                    tax_behavior: "inclusive",
+                    unit_amount_decimal: product.price * 100
+                }
+            })
         }
 
-        
+        const id = await createSession(lineItems,order.orderId)
 
-        
+        order.stripePaymentId = id
+        await order.save()
+
         await Cart.destroy({where:{userId}, transaction:t})
         await t.commit()
         
-        return res.status(200).json("order placed");
+        return res.status(200).json({id, message: "order placed"});
     } catch (error) {
         console.error(error);
         return res.status(500).json("Internal Server Error")

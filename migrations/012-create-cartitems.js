@@ -16,6 +16,13 @@ module.exports = {
           key:'productId'
         }
       },
+      spellId:{
+        type: Sequelize.INTEGER,
+        references:{
+          model: 'spells',
+          key: 'spellId'
+        }
+      },
       cartId:{
         type: Sequelize.INTEGER,
         allowNull:false,
@@ -44,5 +51,5 @@ module.exports = {
   async down (queryInterface, Sequelize) {
     return await queryInterface.dropTable('cartitems')
   },
-  order:11
+  order:12
 };

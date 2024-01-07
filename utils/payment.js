@@ -1,10 +1,10 @@
 const stripe = require('stripe')(process.env.STRIPE_SK)
 
-exports.createSession = async(line_items) => {
+exports.createSession = async(line_items,id) => {
     try {
         const session = await stripe.checkout.sessions.create({
             currency: 'inr',
-            client_reference_id: 1, // order_id
+            client_reference_id: id, // order_id
             line_items: line_items,
             phone_number_collection:{
                 enabled:true

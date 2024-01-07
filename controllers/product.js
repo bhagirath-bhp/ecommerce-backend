@@ -4,10 +4,12 @@ const Product = require('../models/product')
 const {uploadImages} = require('../utils/uploadImage')
 const Image = require('../models/image')
 const Collection = require('../models/collection')
+const Spell = require('../models/spells')
 const sequelize = require('../db/db');
 const {deleteImage} = require('../utils/deleteImage');
 
 Collection.hasMany(Product,{foreignKey: 'collectionId'})
+Product.belongsTo(Collection, {foreignKey: 'collectionId'})
 
 Category.hasMany(Product,{foreignKey:'categoryId'})
 
@@ -150,6 +152,10 @@ exports.getAllProducts = async (req, res) => {
                     model: Image,
                     attributes: ['imageURL'],
                 },
+                {
+                    model: Collection,
+                    attributes: ['name']
+                }
             ],
             attributes: ['productId', 'name', 'description', 'quantity', 'price'],
             order: [[sortBy,sortOrder]],

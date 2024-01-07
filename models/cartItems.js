@@ -10,6 +10,9 @@ const CartItems = sequelize.define('cartitems',{
     productId:{
         type: DataTypes.INTEGER
     },
+    spellId:{
+        type: DataTypes.INTEGER,
+    },
     cartId:{
         type: DataTypes.INTEGER,
         allowNull: false

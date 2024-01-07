@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken')
 
 const cookieToken = (user,res) => {
-    const token = jwt.sign({id:user.userId}, process.env.JWT_SECRET,{expiresIn: process.env.JWT_EXPIRY})
+    const token = jwt.sign({id:user.userId}, process.env.JWT_SECRET,{expiresIn: 24*60*60})
 
     const options = {
         expires: new Date(
