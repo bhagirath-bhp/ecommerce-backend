@@ -8,8 +8,8 @@ const router = express.Router()
 
 //product
 router.post("/product/add", isLoggedIn,addProduct)
-router.get("/products",isLoggedIn,getAllProducts)
-router.route("/product/:id").get(isLoggedIn,getAProduct).put(isLoggedIn,updateProduct).delete(isLoggedIn,deleteProduct)
+router.get("/products",getAllProducts)
+router.route("/product/:id").get(getAProduct).put(isLoggedIn,updateProduct).delete(isLoggedIn,deleteProduct)
 
 // category
 router.post("/category/add",isLoggedIn,addCategory)
@@ -18,8 +18,8 @@ router.get("/category/:id",isLoggedIn,getProdutsByCategory)
 
 //collection
 router.post("/collection/add",isLoggedIn,addCollection)
-router.get("/collection",isLoggedIn,getCollection)
-router.get("/collection/:id",isLoggedIn,getProductsByCollection)
+router.get("/collection",getCollection)
+router.get("/collection/:id",getProductsByCollection)
 
 //wishlist
 router.post("/wishlist/add",isLoggedIn,addToWishlist)
