@@ -8,14 +8,16 @@
   },
   "test": {
     "username": "postgres",
-    "password": "postgres",
+    "password": "devparikh142003",
     "database": "test",
-    "host": "db",
+    "host": "database-1.c76nszc0whox.ap-south-1.rds.amazonaws.com",
     "dialect": "postgres"
   },
-  "username": "postgres",
-  "password": "postgres",
-  "database": "drakina",
-  "host": "db",
-  "dialect": "postgres"
+  "production":{
+    "username": "postgres",
+    "password": "postgres",
+    "database": "drakina",
+    "host": "db",
+    "dialect": "postgres"
+  }
 }

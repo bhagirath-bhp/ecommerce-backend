@@ -62,7 +62,7 @@ exports.addOrder = async(req,res) => {
                 {quantity: item.product.quantity - item.quantity},
                 {where: {productId: item.product.productId}, transaction:t}
             )
-
+ 
             await OrderItem.create({
                 orderId: order.orderId,
                 productId: item.product.productId,

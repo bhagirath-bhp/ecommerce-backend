@@ -20,47 +20,67 @@ Cart.hasMany(CartItems,{
     foreignKey: 'cartId'
 })
 
-exports.addToCart = async(req,res) => {
+exports.addToCart = async (req, res) => {
     try {
-        const {userId,productId,quantity} = req.body 
+        const { userId, productId, quantity } = req.body;
 
         const cart = await Cart.findOne({
-            where:{
+            where: {
                 userId
             }
-        })
+        });
 
-        if(!cart){
+        if (!cart) {
             const newCart = await Cart.create({
                 userId
-            })
+            });
 
             const [cartItem] = await CartItems.findOrCreate({
-                where:{
+                where: {
                     cartId: newCart.cartId,
-                    productId,
+                    productId
+                },
+                defaults: {
                     quantity: quantity > 1 ? quantity : 1
                 }
-            })
+            });
 
-            return res.status(200).json("added to cart")
+            if (!cartItem) {
+                return res.status(500).json("Internal Server Error");
+            }
+
+            return res.status(200).json("Added to cart");
         }
 
         const [cartItem] = await CartItems.findOrCreate({
-            where:{
+            where: {
                 cartId: cart.cartId,
-                productId,
+                productId
+            },
+            defaults: {
                 quantity: quantity > 1 ? quantity : 1
             }
-        })
+        });
 
-        return res.status(200).json("added to cart")
-        
+        if (!cartItem) {
+            return res.status(500).json("Internal Server Error");
+        }
+
+        if (!cartItem._options.isNewRecord) {
+            // The item already exists in the cart, update the quantity
+            await cartItem.update({
+                quantity: quantity > 1 ? quantity : 1
+            });
+        }
+
+        return res.status(200).json("Added to cart");
+
     } catch (error) {
         console.error(error);
-        return res.status(500).json("Internal Server Error")
+        return res.status(500).json("Internal Server Error");
     }
-}
+};
+
 
 exports.getCart = async(req,res) => {
     try {
