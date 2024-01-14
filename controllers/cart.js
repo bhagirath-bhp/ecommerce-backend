@@ -2,6 +2,7 @@ const Cart = require('../models/cart')
 const CartItems = require('../models/cartItems')
 const User = require('../models/user')
 const Product = require('../models/product')
+const Image = require('../models/image')
 
 User.hasOne(Cart,{
     foreignKey: 'userId',
@@ -19,6 +20,17 @@ CartItems.belongsTo(Product,{foreignKey: 'productId'})
 Cart.hasMany(CartItems,{
     foreignKey: 'cartId'
 })
+
+Product.hasMany(Image,{
+    foreignKey: 'productId'
+})
+  
+Image.belongsTo(Product,{
+    foreignKey:'productId',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+})
+  
 
 exports.addToCart = async (req, res) => {
     try {
@@ -96,7 +108,11 @@ exports.getCart = async(req,res) => {
                     include:[
                         {
                             model: Product,
-                            attributes:['productId','name','price']
+                            attributes:['productId','name','price'],
+                            include:[{
+                                model: Image,
+                                attributes:['imageURL']
+                            }]
                         },
                     ],
                     attributes:['cartId','quantity']

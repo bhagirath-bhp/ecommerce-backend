@@ -156,3 +156,31 @@ exports.success = async(req,res) => {
         return res.status(500).json("Internal Server Error")
     }
 }
+
+exports.getOrderDetails = async(req,res) => {
+    try {
+        const {id} = req.params 
+
+        const order = await Order.findOne({
+            where:{orderId: id},
+            include:[
+                {
+                    model: OrderItem,
+                    attributes: ['quantity', 'price'],
+                    include:[
+                        {
+                            model:Product,
+                            attributes:['name']
+                        }
+                    ]
+                }
+            ],
+            attributes:['orderId']
+        })
+
+        return res.status(200).json(order)
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json("Internal Server Error")
+    }
+}
