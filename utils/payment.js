@@ -34,7 +34,7 @@ exports.createSession = async(line_items,id) => {
             mode: "payment"
         })
 
-        return session.id
+        return {"url":session.url,"id":session.id}
     } catch (error) {
         console.error(error);
     }

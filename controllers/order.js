@@ -83,7 +83,7 @@ exports.addOrder = async(req,res) => {
             })
         }
 
-        const id = await createSession(lineItems,order.orderId)
+        const {url,id} = await createSession(lineItems,order.orderId)
 
         await Order.update({
             stripePaymentId: id
@@ -92,7 +92,7 @@ exports.addOrder = async(req,res) => {
         await Cart.destroy({where:{userId}, transaction:t})
         await t.commit()
         
-        return res.status(200).json({id, message: "order placed"});
+        return res.status(200).json({url, message: "order placed"});
     } catch (error) {
         console.error(error);
         return res.status(500).json("Internal Server Error")
