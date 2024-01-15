@@ -19,5 +19,5 @@ module.exports = {
   async down (queryInterface, Sequelize) {
     return queryInterface.dropTable('collections')
   },
-  order:5,
+  order:6,
 };

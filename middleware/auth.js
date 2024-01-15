@@ -18,3 +18,12 @@ exports.isLoggedIn = async(req,res,next) => {
         console.error(error);
     }
 }
+
+exports.checkRole = (...roles) => {
+    return (req,res,next) => {
+        if(!roles.includes(req.user.role)){
+            return next(Error("unauthorized access"))
+        }
+        next()
+    }
+}

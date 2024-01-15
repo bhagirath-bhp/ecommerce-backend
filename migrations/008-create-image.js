@@ -33,5 +33,5 @@ module.exports = {
   async down (queryInterface, Sequelize) {
     return queryInterface.dropTable('images')
   },
-  order:8,
+  order:9,
 };

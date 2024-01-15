@@ -55,5 +55,5 @@ module.exports = {
   async down (queryInterface, Sequelize) {
     return await queryInterface.dropTable('orders')
   },
-  order:13
+  order:14
 };

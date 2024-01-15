@@ -1,20 +1,20 @@
 const express = require('express')
 const {addCategory,getCategories,addProduct,getAllProducts,getAProduct,updateProduct,deleteProduct,addCollection,getCollection,getProdutsByCategory, getProductsByCollection} = require('../controllers/product')
 const {addToWishlist,getWishlist} = require('../controllers/wishlist')
-const {isLoggedIn} = require('../middleware/auth')
+const {isLoggedIn,checkRole} = require('../middleware/auth')
 const {addToCart,getCart,reduceQuantity,removeFromCart} = require('../controllers/cart')
 
 const router = express.Router()
 
 //product
-router.post("/product/add", isLoggedIn,addProduct)
+router.post("/product/add", isLoggedIn,checkRole('admin'),addProduct)
 router.get("/products",getAllProducts)
-router.route("/product/:id").get(getAProduct).put(isLoggedIn,updateProduct).delete(isLoggedIn,deleteProduct)
+router.route("/product/:id").get(getAProduct).put(isLoggedIn,checkRole('admin'),updateProduct).delete(isLoggedIn,checkRole('admin'),deleteProduct)
 
 // category
-router.post("/category/add",isLoggedIn,addCategory)
-router.get("/category",isLoggedIn,getCategories)
-router.get("/category/:id",isLoggedIn,getProdutsByCategory)
+router.post("/category/add",isLoggedIn,checkRole('admin'),addCategory)
+router.get("/category",getCategories)
+router.get("/category/:id",getProdutsByCategory)
 
 //collection
 router.post("/collection/add",isLoggedIn,addCollection)

@@ -23,5 +23,5 @@ module.exports = {
   async down (queryInterface, Sequelize) {
     return await queryInterface.dropTable('spells')
   },
-  order:6
+  order:7
 };
