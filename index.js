@@ -9,6 +9,7 @@ const userRoute = require('./routes/userRoutes.js')
 const productRoute = require('./routes/productRoutes.js')
 const orderRoute = require('./routes/orderRoutes.js')
 const ratingRoute = require('./routes/reviewRoutes.js')
+const spellRoute = require('./routes/spellRoutes.js')
 require('dotenv').config()
 
 const app = express()
@@ -40,6 +41,7 @@ app.use("/api/v1",userRoute)
 app.use("/api/v1",productRoute)
 app.use("/api/v1",orderRoute)
 app.use("/api/v1",ratingRoute)
+app.use("/api/v1",spellRoute)
 
 app.listen(process.env.PORT, () => {
     sequelize.authenticate()

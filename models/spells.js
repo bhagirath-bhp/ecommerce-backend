@@ -12,7 +12,7 @@ const Spell = sequelize.define('spells',{
         allowNull: false
     },
     description:{
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull:false
     }
 },{timestamps:false})
