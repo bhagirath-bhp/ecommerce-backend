@@ -349,3 +349,19 @@ exports.getProductsByCollection = async(req,res) => {
         return res.status(500).json("Internal Server Error")
     }
 }
+
+exports.getFiveRandomProducts = async(req,res) => {
+    try {
+        const productCount = await Product.count();
+        const randomIndices = Math.floor(Math.random() * productCount);
+        const randomProducts = await Product.findAll({
+            // offset: randomIndices,
+            limit: 5,
+          });
+
+        return res.status(200).json(randomProducts)
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json("Internal Server Error")
+    }
+}
