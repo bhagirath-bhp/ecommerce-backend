@@ -6,6 +6,11 @@ const cookieToken = require('../utils/cookieToken')
 const bcrypt = require('bcryptjs')
 const { Op, where } = require('sequelize')
 
+Address.belongsTo(Country,{foreignKey: 'countryId'})
+Country.hasMany(Address,{foreignKey: 'countryId'})
+User.hasMany(Address,{foreignKey:'userId'})
+Address.belongsTo(User,{foreignKey: 'userId'})
+
 exports.signup = async(req,res) => {
     try {
         const {first_name,last_name,email,password, phone_number} = req.body
@@ -120,6 +125,31 @@ exports.removeAddress = async(req,res) => {
         })
 
         return res.status(200).json("address deleted")
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json("Internal Server Error")
+    }
+}
+
+exports.getAddresses = async(req,res) => {
+    try {
+        const {userId} = req.params 
+        const addresses = await Address.findAll({
+            userId,
+            attributes: ['addressId','address_line_1','address_line_2','city','state','zipCode'],
+            include:[
+                {
+                    model: Country,
+                    attributes:['countryName']
+                }
+            ]
+        })
+
+        if(!addresses){
+            return res.status(404).json("no address found for the user")
+        }
+
+        return res.status(200).json(addresses)
     } catch (error) {
         console.error(error);
         return res.status(500).json("Internal Server Error")
