@@ -44,17 +44,27 @@ exports.addProduct = async(req,res) => {
             description,
             quantity,
             price: price>0 ? price : 0
-        },{transaction:t})
+        },{transaction: t})
 
         if(req.files){
-            const img = await uploadImages(res,req.files['images[]'])
-            img.forEach(async(image) => {
-                await Image.create({
+            let images = req.files.images || req.files['images[]'];
+            // console.log(images);
+            const img = await uploadImages(res, images);
+            // console.log('img:\n', img);
+
+            // Use Promise.all to await all Image.create promises
+            await Promise.all(
+                img.map(async (image) => {
+                await Image.create(
+                    {
                     imageName: image.key,
                     imageURL: image.url,
-                    productId: product.productId
-                },{transaction: t})
-            });
+                    productId: product.productId,
+                    },
+                    { transaction: t }
+                );
+                })
+            );
         }
 
         await t.commit()

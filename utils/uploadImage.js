@@ -40,7 +40,7 @@ exports.uploadImages = async(res,images) => {
                         Key: name,
                         Body: fs.createReadStream(images.tempFilePath),
                         ACL:'public-read',
-                        ContentDisposition: "inline",
+                        ContentDisposition: "inline", 
                         ContentType: images.mimetype
                     }
                     const command = new PutObjectCommand(params)
