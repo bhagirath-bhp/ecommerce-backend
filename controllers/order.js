@@ -7,6 +7,7 @@ const Cart = require('../models/cart')
 const User = require('../models/user')
 const CartItems = require('../models/cartItems')
 const Address = require('../models/address')
+const Country = require('../models/country')
 const { createSession } = require('../utils/payment')
 const stripe = require('stripe')(process.env.STRIPE_SK)
 
@@ -102,7 +103,12 @@ exports.addOrder = async(req,res) => {
 exports.getAllOrdersForAUser = async(req,res)=> {
     try {
         const {userId} = req.params
-        const orders = await Order.findAll({
+
+        const page = parseInt(req.query.page) || 1;
+        const pageSize = parseInt(req.query.pageSize) || 6;
+        const offset = (page - 1) * pageSize;
+
+        const orders = await Order.findAndCountAll({
             where:{
                 userId
             },
@@ -118,14 +124,29 @@ exports.getAllOrdersForAUser = async(req,res)=> {
                     ]
                 }
             ],
-            attributes:['orderId','amount','totalAmount','shippingAmount','stripePaymentId']
+            attributes:['orderId','amount','totalAmount','shippingAmount','stripePaymentId'],
+            limit: pageSize,
+            offset: offset,
         })
         
-        if(!orders){
+        if(orders.count == 0){
             return res.status(400).json("no orders found")
         }
 
-        return res.status(200).json(orders)
+        const totalPages = Math.ceil(orders.count / pageSize);
+
+
+        const response = {
+            orders: orders.rows,
+            pagination: {
+                page: page,
+                pageSize: pageSize,
+                totalProducts: orders.count,
+                totalPages: totalPages,
+            },
+        };
+
+        return res.status(200).json(response);
     } catch (error) {
         console.error(error);
         return res.status(500).json("Internal Server Error")
@@ -187,7 +208,12 @@ exports.getOrderDetails = async(req,res) => {
 
 exports.getAllOrdersForAdmin = async(req,res) => {
     try {
-        const orders = await Order.findAll({
+
+        const page = parseInt(req.query.page) || 1;
+        const pageSize = parseInt(req.query.pageSize) || 6;
+        const offset = (page - 1) * pageSize;
+
+        const orders = await Order.findAndCountAll({
             attributes: ['orderId','totalAmount'],
             include:[
                 {
@@ -203,13 +229,41 @@ exports.getAllOrdersForAdmin = async(req,res) => {
                 {
                     model: User,
                     attributes: ['first_name','last_name','email'],
+                    include: [
+                        {
+                            model: Address,
+                            attributes:['address_line_1','address_line_2','city','state','zipCode'],
+                            include: [
+                                {
+                                    model: Country,
+                                    attributes: ['countryName']
+                                }
+                            ]
+                        }
+                    ]
                 }
-            ]
+            ],
+            limit: pageSize,
+            offset: offset,
         })
 
-        if(orders.length <= 0) return res.status(404).json("no orders found")
 
-        return res.status(200).json(orders)
+        if(orders.count ==  0) return res.status(404).json("no orders found")
+
+    const totalPages = Math.ceil(orders.count / pageSize);
+
+
+        const response = {
+            orders: orders.rows,
+            pagination: {
+                page: page,
+                pageSize: pageSize,
+                totalProducts: orders.count,
+                totalPages: totalPages,
+            },
+        };
+
+        return res.status(200).json(response);
 
     } catch (error) {
         console.error(error);
