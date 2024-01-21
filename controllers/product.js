@@ -39,7 +39,7 @@ exports.addProduct = async(req,res) => {
 
         const product = await Product.create({
             name,
-            categoryId,
+            // categoryId,
             collectionId,
             description,
             quantity,
@@ -357,6 +357,12 @@ exports.getFiveRandomProducts = async(req,res) => {
         const randomProducts = await Product.findAll({
             // offset: randomIndices,
             limit: 5,
+            include:[
+                {
+                    model: Image,
+                    attributes: ['imageURL']
+                }
+            ]
           });
 
         return res.status(200).json(randomProducts)
