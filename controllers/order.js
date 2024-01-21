@@ -184,3 +184,35 @@ exports.getOrderDetails = async(req,res) => {
         return res.status(500).json("Internal Server Error")
     }
 }
+
+exports.getAllOrdersForAdmin = async(req,res) => {
+    try {
+        const orders = await Order.findAll({
+            attributes: ['orderId','totalAmount'],
+            include:[
+                {
+                    model: OrderItem,
+                    attributes: ['quantity','price'],
+                    include:[
+                        {
+                            model: Product,
+                            attributes: ['name']
+                        }
+                    ]
+                },
+                {
+                    model: User,
+                    attributes: ['first_name','last_name','email'],
+                }
+            ]
+        })
+
+        if(orders.length <= 0) return res.status(404).json("no orders found")
+
+        return res.status(200).json(orders)
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json("Internal Server Error")
+    }
+}
