@@ -31,6 +31,9 @@ Image.belongsTo(Product,{
 
 
 exports.addProduct = async(req,res) => {
+
+    const t = await sequelize.transaction()
+
     try {
         const {name,categoryId,collectionId,description,quantity,price} = req.body 
 
@@ -41,21 +44,25 @@ exports.addProduct = async(req,res) => {
             description,
             quantity,
             price: price>0 ? price : 0
-        })
+        },{transaction:t})
 
         if(req.files){
-            const img = await uploadImages(res,req.files.images)
+            const img = await uploadImages(res,req.files['images[]'])
+            console.log(img);
             img.forEach(async(image) => {
                 await Image.create({
                     imageName: image.key,
                     imageURL: image.url,
                     productId: product.productId
-                })
+                },{transaction: t})
             });
         }
+
+        await t.commit()
         return res.status(200).json("product added")
     } catch (error) {
         console.error(error);
+        await t.rollback()
         return res.status(500).json("Internal Server Error")
     }
 }

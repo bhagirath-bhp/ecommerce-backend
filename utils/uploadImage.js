@@ -25,6 +25,7 @@ exports.uploadImages = async(res,images) => {
                     await s3Client.send(command)
 
                     const url = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${name}`
+                    console.log(url);
 
                     urlArr.push({"key":name, "url": url})
                 }
@@ -45,6 +46,7 @@ exports.uploadImages = async(res,images) => {
                     const command = new PutObjectCommand(params)
                     await s3Client.send(command)
                     const url = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${name}` 
+                    console.log(url);
                     urlArr.push({key:name, url: url})
                     return urlArr;
             }

@@ -61,7 +61,7 @@ exports.getWishlist = async(req,res) => {
                 include:[
                     {
                         model: Product,
-                        attributes: ['name','description','price','quantity'],
+                        attributes: ['productId','name','description','price','quantity'],
                         include:[
                             {
                                 model: Image,
