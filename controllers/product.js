@@ -48,7 +48,6 @@ exports.addProduct = async(req,res) => {
 
         if(req.files){
             const img = await uploadImages(res,req.files['images[]'])
-            console.log(img);
             img.forEach(async(image) => {
                 await Image.create({
                     imageName: image.key,
