@@ -1,4 +1,4 @@
-const { Op } = require('sequelize');
+const { Op, Sequelize } = require('sequelize');
 const Category = require('../models/category');
 const Product = require('../models/product')
 const {uploadImages} = require('../utils/uploadImage')
@@ -360,6 +360,24 @@ exports.getFiveRandomProducts = async(req,res) => {
           });
 
         return res.status(200).json(randomProducts)
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json("Internal Server Error")
+    }
+}
+
+exports.search = async(req,res) => {
+    try {
+        const {name} = req.query
+        const result = await Product.findAll({
+            where: {
+                name: {
+                  [Op.iLike]: `%${name}%`,
+                },
+            },
+        })
+
+        return res.status(200).json(result)
     } catch (error) {
         console.error(error);
         return res.status(500).json("Internal Server Error")

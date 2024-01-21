@@ -1,5 +1,5 @@
 const express = require('express')
-const {addCategory,getCategories,addProduct,getAllProducts,getAProduct,updateProduct,deleteProduct,addCollection,getCollection,getProdutsByCategory, getProductsByCollection, getFiveRandomProducts} = require('../controllers/product')
+const {addCategory,getCategories,addProduct,getAllProducts,getAProduct,updateProduct,deleteProduct,addCollection,getCollection,getProdutsByCategory, getProductsByCollection, getFiveRandomProducts,search} = require('../controllers/product')
 const {addToWishlist,getWishlist} = require('../controllers/wishlist')
 const {isLoggedIn,checkRole} = require('../middleware/auth')
 const {addToCart,getCart,reduceQuantity,removeFromCart} = require('../controllers/cart')
@@ -31,5 +31,7 @@ router.delete("/cart/remove",isLoggedIn,removeFromCart)
 router.post("/cart/reduce",isLoggedIn,reduceQuantity)
 router.post("/cart",isLoggedIn,addToCart)
 router.get("/cart/:id",isLoggedIn,getCart)
+
+router.get("/products/search",search)
 
 module.exports = router
