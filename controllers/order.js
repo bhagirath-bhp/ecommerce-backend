@@ -8,6 +8,7 @@ const User = require('../models/user')
 const CartItems = require('../models/cartItems')
 const Address = require('../models/address')
 const Country = require('../models/country')
+const Image = require('../models/image')
 const { createSession } = require('../utils/payment')
 const stripe = require('stripe')(process.env.STRIPE_SK)
 
@@ -23,7 +24,7 @@ exports.addOrder = async(req,res) => {
         isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE
     })
     try {
-        const {userId} = req.body
+        const {userId,addressId} = req.body
         const cart = await Cart.findOne({
             where: {userId},
             transaction:t
@@ -43,7 +44,7 @@ exports.addOrder = async(req,res) => {
             attributes: ['itemId','cartId','quantity']
         })
 
-        const order = await Order.create({userId}, {transaction:t})
+        const order = await Order.create({userId,addressId}, {transaction:t})
 
         let lineItems=[]
 
@@ -119,7 +120,13 @@ exports.getAllOrdersForAUser = async(req,res)=> {
                     include:[
                         {
                             model: Product,
-                            attributes: ['name']
+                            attributes: ['name', 'description'],
+                            include: [
+                                {
+                                    model: Image,
+                                    attributes: ['imageURL']
+                                }
+                            ]
                         }
                     ]
                 }
@@ -166,7 +173,7 @@ exports.success = async(req,res) => {
         
         await Order.update({
             amount: session?.amount_subtotal/100,
-            shippingAmount: session?.shipping_cost.amount_total,
+            shippingAmount: session?.shipping_cost.amount_total/100,
             totalAmount: session?.amount_total/100,
             payment_status: session?.status
         },{where:{orderId: orderid}})
@@ -191,7 +198,13 @@ exports.getOrderDetails = async(req,res) => {
                     include:[
                         {
                             model:Product,
-                            attributes:['name']
+                            attributes:['name','description'],
+                            include:[
+                                {
+                                    model: Image,
+                                    attributes: ['imageURL']
+                                }
+                            ]
                         }
                     ]
                 }
@@ -240,7 +253,8 @@ exports.getAllOrdersForAdmin = async(req,res) => {
                                 }
                             ]
                         }
-                    ]
+                    ],
+                    subQuery: false
                 }
             ],
             limit: pageSize,

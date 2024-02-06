@@ -29,8 +29,8 @@ exports.createSession = async(line_items,id) => {
                     type: 'fixed_amount'
                 }
             }],
-            success_url:"http://localhost:5713/success",
-            cancel_url:"http://localhost:5713/cancel",
+            success_url:"http://localhost:5173/success",
+            cancel_url:"http://localhost:5713/",
             mode: "payment"
         })
 
