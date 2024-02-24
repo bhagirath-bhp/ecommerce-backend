@@ -1,6 +1,6 @@
 const express = require('express')
 const {addCategory,getCategories,addProduct,getAllProducts,getAProduct,updateProduct,deleteProduct,addCollection,getCollection,getProdutsByCategory, getProductsByCollection, getFiveRandomProducts,search} = require('../controllers/product')
-const {addToWishlist,getWishlist} = require('../controllers/wishlist')
+const {addToWishlist,getWishlist, removeFromWishlist} = require('../controllers/wishlist')
 const {isLoggedIn,checkRole} = require('../middleware/auth')
 const {addToCart,getCart,reduceQuantity,removeFromCart} = require('../controllers/cart')
 
@@ -25,6 +25,7 @@ router.get("/collection/:id",getProductsByCollection)
 //wishlist
 router.post("/wishlist/add",isLoggedIn,addToWishlist)
 router.get("/wishlist/:id",isLoggedIn,getWishlist)
+router.delete('/wishlist/remove',isLoggedIn,removeFromWishlist)
 
 //cart
 router.delete("/cart/remove",isLoggedIn,removeFromCart)

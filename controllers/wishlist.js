@@ -81,3 +81,25 @@ exports.getWishlist = async(req,res) => {
         return res.status(500).json("Internal Server Error")
     }
 }
+
+exports.removeFromWishlist = async(req,res) => {
+    try {
+        const {wishlistId,productId} = req.body
+
+        const item = await WishlistItems.findOne({
+            where:{
+                wishlistId,
+                productId
+            }
+        })
+
+        if(!item) res.status(404).json("product not found")
+
+        await item.destroy()
+
+        return res.status(200).json("product removed from wishlist")
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json("Internal Server Error")
+    }
+}
