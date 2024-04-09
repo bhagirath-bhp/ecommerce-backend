@@ -1,15 +1,7 @@
 const sequelize = require('../db/db')
 const User = require('../models/user')
-const Country = require('../models/country')
-const Address = require('../models/address')
 const cookieToken = require('../utils/cookieToken')
 const bcrypt = require('bcryptjs')
-const { Op, where } = require('sequelize')
-
-Address.belongsTo(Country,{foreignKey: 'countryId'})
-Country.hasMany(Address,{foreignKey: 'countryId'})
-User.hasMany(Address,{foreignKey:'userId'})
-Address.belongsTo(User,{foreignKey: 'userId'})
 
 exports.signup = async(req,res) => {
     try {
@@ -55,101 +47,6 @@ exports.login = async(req,res) => {
         }
 
         cookieToken(user,res)
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json("Internal Server Error")
-    }
-}
-
-exports.addAddress = async(req,res) => {
-    try {
-        const {address_line_1,address_line_2,city,country,zipCode,userId} = req.body 
-        const c = await Country.findOne({
-            where:{
-                countryName:{
-                    [Op.iLike] : `%${country}`
-                }
-            }
-        })
-        if(!c){
-            const newCountry = await Country.create({countryName: country})
-            await Address.create({
-                address_line_1,
-                address_line_2,
-                city,
-                countryId: newCountry.countryId,
-                zipCode,
-                userId
-            })
-
-            return res.status(200).json("address added")
-        }
-
-        await Address.create({
-            address_line_1,
-            address_line_2,
-            countryId: c.countryId,
-            zipCode,
-            userId
-        })
-
-        return res.status(200).json("address added")
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json("Internal Server Error")
-    }
-}
-
-exports.updateAddress = async(req,res) => {
-    try {
-        const {address_line_1,address_line_2,city,zipCode,userId} = req.body 
-        await Address.update(
-            {address_line_1,address_line_2,city,zipCode},{where: {userId}}
-        )
-
-        return res.status(200).json("address updated")
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json("Internal Server Error")
-    }
-}
-
-exports.removeAddress = async(req,res) => {
-    try {
-        const {addressId,userId} = req.body
-        await Address.destroy({
-            where:{
-                addressId,
-                userId
-            }
-        })
-
-        return res.status(200).json("address deleted")
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json("Internal Server Error")
-    }
-}
-
-exports.getAddresses = async(req,res) => {
-    try {
-        const {userId} = req.params 
-        const addresses = await Address.findAll({
-            userId,
-            attributes: ['addressId','address_line_1','address_line_2','city','state','zipCode'],
-            include:[
-                {
-                    model: Country,
-                    attributes:['countryName']
-                }
-            ]
-        })
-
-        if(!addresses){
-            return res.status(404).json("no address found for the user")
-        }
-
-        return res.status(200).json(addresses)
     } catch (error) {
         console.error(error);
         return res.status(500).json("Internal Server Error")

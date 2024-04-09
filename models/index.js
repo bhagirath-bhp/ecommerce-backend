@@ -8,28 +8,6 @@ const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.json')[env];
 const db = {};
-const User = require('./user')
-const Address = require('./address')
-const Category = require('./category')
-const Country = require('./country')
-const Image = require('./image')
-const Product = require('./product')
-
-User.hasMany(Address)
-
-Address.belongsTo(User,{
-  foreignKey: 'userId',
-  onDelete: 'CASCADE',
-  onUpdate: 'CASCADE'
-})
-
-Country.hasMany(Address)
-
-Address.belongsTo(Country,{
-  foreignKey: 'countryId',
-  onDelete: 'CASCADE',
-  onUpdate: 'CASCADE'
-})
 
 let sequelize;
 if (config.use_env_variable) {

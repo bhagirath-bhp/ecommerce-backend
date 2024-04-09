@@ -12,6 +12,10 @@ module.exports = {
       name: {
         type: Sequelize.STRING,
         allowNull: false
+      },
+      hasSpells:{
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
       }
     })
   },

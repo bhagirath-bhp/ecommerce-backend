@@ -23,9 +23,6 @@ const Order = sequelize.define('orders',{
     stripePaymentId:{
         type:DataTypes.STRING
     },
-    addressId:{
-        type: DataTypes.INTEGER
-    },
     payment_status:{
         type: DataTypes.STRING,
         defaultValue: 'pending'

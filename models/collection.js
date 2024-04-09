@@ -10,6 +10,10 @@ const Collection = sequelize.define('collections',{
     name:{
         type: DataTypes.STRING,
         allowNull: false,
+    },
+    hasSpells:{
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
     }
 },{
     timestamps: false,

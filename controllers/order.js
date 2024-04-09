@@ -6,16 +6,12 @@ const Product = require('../models/product')
 const Cart = require('../models/cart')
 const User = require('../models/user')
 const CartItems = require('../models/cartItems')
-const Address = require('../models/address')
-const Country = require('../models/country')
 const Image = require('../models/image')
 const { createSession } = require('../utils/payment')
 const stripe = require('stripe')(process.env.STRIPE_SK)
 
 Order.belongsTo(User,{foreignKey: 'userId'})
 Order.hasMany(OrderItem,{foreignKey: 'orderId'})
-Order.belongsTo(Address,{foreignKey: "addressId"})
-Address.hasMany(Order,{foreignKey: 'addressId'})
 OrderItem.belongsTo(Order,{foreignKey:'orderId'})
 OrderItem.belongsTo(Product,{foreignKey: 'productId'})
 
@@ -24,7 +20,7 @@ exports.addOrder = async(req,res) => {
         isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE
     })
     try {
-        const {userId,addressId} = req.body
+        const {userId} = req.body
         const cart = await Cart.findOne({
             where: {userId},
             transaction:t
@@ -44,7 +40,7 @@ exports.addOrder = async(req,res) => {
             attributes: ['itemId','cartId','quantity']
         })
 
-        const order = await Order.create({userId,addressId}, {transaction:t})
+        const order = await Order.create({userId}, {transaction:t})
 
         let lineItems=[]
 
@@ -242,19 +238,6 @@ exports.getAllOrdersForAdmin = async(req,res) => {
                 {
                     model: User,
                     attributes: ['first_name','last_name','email'],
-                    include: [
-                        {
-                            model: Address,
-                            attributes:['address_line_1','address_line_2','city','state','zipCode'],
-                            include: [
-                                {
-                                    model: Country,
-                                    attributes: ['countryName']
-                                }
-                            ]
-                        }
-                    ],
-                    subQuery: false
                 }
             ],
             limit: pageSize,

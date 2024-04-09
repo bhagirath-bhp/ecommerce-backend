@@ -14,6 +14,9 @@ const Spell = sequelize.define('spells',{
     description:{
         type: DataTypes.TEXT,
         allowNull:false
+    },
+    collectionId:{
+        type: DataTypes.INTEGER,
     }
 },{timestamps:false})
 

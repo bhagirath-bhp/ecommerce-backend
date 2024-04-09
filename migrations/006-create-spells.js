@@ -16,6 +16,13 @@ module.exports = {
       description:{
         type: Sequelize.TEXT,
         allowNull: false
+      },
+      collectionId: {
+        type: Sequelize.INTEGER,
+        references:{
+          model: 'collections',
+          key: 'collectionId'
+        }
       }
     })
   },
