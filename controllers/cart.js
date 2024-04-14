@@ -79,7 +79,6 @@ exports.addToCart = async (req, res) => {
         }
 
         if (!cartItem._options.isNewRecord) {
-            // The item already exists in the cart, update the quantity
             await cartItem.update({
                 quantity: quantity > 1 ? quantity : 1
             });

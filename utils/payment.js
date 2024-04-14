@@ -7,7 +7,7 @@ exports.createSession = async(line_items,id) => {
             client_reference_id: id, // order_id
             line_items: line_items,
             phone_number_collection:{
-                enabled:true
+                enabled:false
             },
             shipping_options:[{
                 shipping_rate_data:{
@@ -29,8 +29,8 @@ exports.createSession = async(line_items,id) => {
                     type: 'fixed_amount'
                 }
             }],
-            success_url:"http://localhost:5173/success",
-            cancel_url:"http://localhost:5713/",
+            success_url: process.env.STRIPE_SUCCESS_URL,
+            cancel_url: process.env.STRIPE_CANCEL_URL,
             mode: "payment"
         })
 

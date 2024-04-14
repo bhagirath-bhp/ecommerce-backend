@@ -1,5 +1,4 @@
 const { Op, Sequelize } = require('sequelize');
-const Category = require('../models/category');
 const Product = require('../models/product')
 const {uploadImages} = require('../utils/uploadImage')
 const Image = require('../models/image')
@@ -10,14 +9,6 @@ const {deleteImage} = require('../utils/deleteImage');
 
 Collection.hasMany(Product,{foreignKey: 'collectionId'})
 Product.belongsTo(Collection, {foreignKey: 'collectionId'})
-
-Category.hasMany(Product,{foreignKey:'categoryId'})
-
-Product.belongsTo(Category, {
-  foreignKey: 'categoryId',
-  onDelete: 'CASCADE',
-  onUpdate: 'CASCADE'
-})
 
 Product.hasMany(Image,{
   foreignKey: 'productId'
@@ -35,11 +26,10 @@ exports.addProduct = async(req,res) => {
     const t = await sequelize.transaction()
 
     try {
-        const {name,categoryId,collectionId,description,quantity,price} = req.body 
+        const {name,collectionId,description,quantity,price} = req.body 
 
         const product = await Product.create({
             name,
-            // categoryId,
             collectionId,
             description,
             quantity,
@@ -76,41 +66,9 @@ exports.addProduct = async(req,res) => {
     }
 }
 
-exports.addCategory = async(req,res) => {
-    const {categoryName} = req.body
-
-    const exists = await Category.findOne({
-        where:{
-            categoryName:{
-                [Op.iLike]: `%${categoryName}`
-            }
-        }
-    })
-
-    if(exists){
-        return res.status(400).json("Category already exists")
-    }
-
-    await Category.create({
-        categoryName
-    })
-
-    return res.status(200).json("Category added")
-}
-
-exports.getCategories = async(req,res) => {
-    try {
-        const categories = await Category.findAll()
-        return res.status(200).json(categories)
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json("Internal Server Error")
-    }
-}
-
 exports.addCollection = async(req,res) => {
     try {
-        const {name} = req.body 
+        const {name, hasSpells} = req.body 
 
         const existing = await Collection.findOne({
             where:{
@@ -125,7 +83,8 @@ exports.addCollection = async(req,res) => {
         }
 
         await Collection.create({
-            name
+            name,
+            hasSpells
         })
 
         return res.status(200).json("collection created")

@@ -89,7 +89,6 @@ exports.addOrder = async(req,res) => {
 
         await Cart.destroy({where:{userId}, transaction:t})
         await t.commit()
-        
         return res.status(200).json({url, message: "order placed"});
     } catch (error) {
         console.error(error);
