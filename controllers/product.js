@@ -26,7 +26,11 @@ exports.addProduct = async(req,res) => {
     const t = await sequelize.transaction()
 
     try {
-        const {name,collectionId,description,quantity,price} = req.body 
+        const {name,collectionId,description,quantity,price} = req.body
+        
+        if (!name || !collectionId || !description || !quantity || !price){
+            return res.status(400).json("name, collectionId, description, quantity or price is missing")
+        }
 
         const product = await Product.create({
             name,
@@ -69,6 +73,10 @@ exports.addProduct = async(req,res) => {
 exports.addCollection = async(req,res) => {
     try {
         const {name, hasSpells} = req.body 
+
+        if (!name || !hasSpells){
+            return res.status(400).json("name or hasSpells attribute missing")
+        }
 
         const existing = await Collection.findOne({
             where:{
@@ -168,8 +176,8 @@ exports.getAProduct = async(req,res) => {
         const product = await Product.findByPk(id,{
             include:[
                 {
-                    model: Category,
-                    attributes:['categoryName']
+                    model: Collection,
+                    attributes:['name', 'hasSpells']
                 },
                 {
                     model: Image,
