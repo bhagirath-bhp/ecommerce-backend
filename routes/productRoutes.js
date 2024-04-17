@@ -1,5 +1,5 @@
 const express = require('express')
-const {addCategory,getCategories,addProduct,getAllProducts,getAProduct,updateProduct,deleteProduct,addCollection,getCollection,getProdutsByCategory, getProductsByCollection, getFiveRandomProducts,search} = require('../controllers/product')
+const {addProduct,getAllProducts,getAProduct,updateProduct,deleteProduct,addCollection,getCollection,getProdutsByCategory, getProductsByCollection, getFiveRandomProducts,search} = require('../controllers/product')
 const {addToWishlist,getWishlist, removeFromWishlist} = require('../controllers/wishlist')
 const {isLoggedIn,checkRole} = require('../middleware/auth')
 const {addToCart,getCart,reduceQuantity,removeFromCart} = require('../controllers/cart')
@@ -11,11 +11,6 @@ router.post("/product/add", isLoggedIn,checkRole('admin'),addProduct)
 router.get("/products",getAllProducts)
 router.get("/products/random",getFiveRandomProducts)
 router.route("/product/:id").get(getAProduct).put(isLoggedIn,checkRole('admin'),updateProduct).delete(isLoggedIn,checkRole('admin'),deleteProduct)
-
-// category
-router.post("/category/add",isLoggedIn,checkRole('admin'),addCategory)
-router.get("/category",getCategories)
-router.get("/category/:id",getProdutsByCategory)
 
 //collection
 router.post("/collection/add",isLoggedIn,addCollection)
