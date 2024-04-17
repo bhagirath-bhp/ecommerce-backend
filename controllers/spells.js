@@ -25,8 +25,13 @@ exports.addSpell = async(req,res) => {
 }
 
 exports.getAllSpells = async(req,res) => {
+    const {id} = req.params
     try {
-        const spells = await Spell.findAll()
+        const spells = await Spell.findAll({
+            where:{
+                "collectionId": id
+            }
+        })
 
         return res.status(200).json(spells)
     } catch (error) {

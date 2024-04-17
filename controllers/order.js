@@ -7,6 +7,7 @@ const Cart = require('../models/cart')
 const User = require('../models/user')
 const CartItems = require('../models/cartItems')
 const Image = require('../models/image')
+const Spells = require('../models/spells')
 const { createSession } = require('../utils/payment')
 const stripe = require('stripe')(process.env.STRIPE_SK)
 
@@ -14,6 +15,7 @@ Order.belongsTo(User,{foreignKey: 'userId'})
 Order.hasMany(OrderItem,{foreignKey: 'orderId'})
 OrderItem.belongsTo(Order,{foreignKey:'orderId'})
 OrderItem.belongsTo(Product,{foreignKey: 'productId'})
+OrderItem.hasOne(Spells, {foreignKey: 'spellId'})
 
 exports.addOrder = async(req,res) => {
     const t = await sequelize.transaction({
@@ -34,11 +36,17 @@ exports.addOrder = async(req,res) => {
                 {
                     model: Product,
                     attributes: ['productId','name','description','quantity','price']
+                },
+                {
+                    model: Spells,
+                    attributes: ["spellId"]
                 }
             ],
             transaction:t,
             attributes: ['itemId','cartId','quantity']
         })
+
+        console.log(cartItems);
 
         const order = await Order.create({userId}, {transaction:t})
 
@@ -66,6 +74,7 @@ exports.addOrder = async(req,res) => {
                 productId: item.product.productId,
                 quantity: item.quantity,
                 price: item.product.price,
+                spellId: item.spell?.spellId
             }, {transaction: t})
 
             lineItems.push({
@@ -122,6 +131,10 @@ exports.getAllOrdersForAUser = async(req,res)=> {
                                     attributes: ['imageURL']
                                 }
                             ]
+                        },
+                        {
+                            model: Spells,
+                            attributes:['name']
                         }
                     ]
                 }
@@ -200,6 +213,10 @@ exports.getOrderDetails = async(req,res) => {
                                     attributes: ['imageURL']
                                 }
                             ]
+                        },
+                        {
+                            model: Spells,
+                            attributes:['name']
                         }
                     ]
                 }
@@ -231,6 +248,10 @@ exports.getAllOrdersForAdmin = async(req,res) => {
                         {
                             model: Product,
                             attributes: ['name']
+                        },
+                        {
+                            model: Spells,
+                            attributes:['name']
                         }
                     ]
                 },

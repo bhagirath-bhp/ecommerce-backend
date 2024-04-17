@@ -97,6 +97,20 @@ exports.removeFromWishlist = async(req,res) => {
 
         await item.destroy()
 
+        const cnt = WishlistItems.count({
+            where:{
+                "wishlistId": wishlistId
+            }
+        })
+
+        if(cnt == 0){
+            await Wishlist.destroy({
+                where:{
+                    "wishlistId": wishlistId
+                }
+            })
+        }
+
         return res.status(200).json("product removed from wishlist")
     } catch (error) {
         console.error(error);

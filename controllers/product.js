@@ -128,10 +128,6 @@ exports.getAllProducts = async (req, res) => {
         const products = await Product.findAndCountAll({
             include: [
                 {
-                    model: Category,
-                    attributes: ['categoryName'],
-                },
-                {
                     model: Image,
                     attributes: ['imageURL'],
                 },
@@ -202,7 +198,7 @@ exports.updateProduct = async(req,res) => {
     const t = await sequelize.transaction()
     try {
         const {id} = req.params 
-        const {name,price,description,quantity,categoryId,collectionId} = req.body
+        const {name,price,description,quantity,collectionId} = req.body
 
         const product = await Product.findByPk(id,{transaction:t})
         
@@ -210,7 +206,7 @@ exports.updateProduct = async(req,res) => {
             return res.status(404).json("product not found!")
         }
         await Product.update(
-            {name,price,description,quantity,categoryId,collectionId},
+            {name,price,description,quantity,collectionId},
             {where: {productId: id}, transaction: t}
         )
 
@@ -229,10 +225,6 @@ exports.updateProduct = async(req,res) => {
         (await t).commit()
         const updatedProduct = await Product.findByPk(id,{
             include:[
-                {
-                    model: Category,
-                    attributes:['categoryName']
-                },
                 {
                     model: Image,
                     attributes:['imageURL']
@@ -274,33 +266,6 @@ exports.deleteProduct = async(req,res) => {
     }
 }
 
-exports.getProdutsByCategory = async(req,res) => {
-    try {
-        const {id} = req.params 
-
-        const products = await Product.findAll({
-            where:{
-                categoryId: id
-            },
-            attributes: ['productId','name','price','quantity','description'],
-            include:[
-                {
-                    model: Image,
-                    attributes: ["imageURL"]
-                }
-            ]
-        })
-
-        if(products.length <= 0){
-            return res.status(404).json("no products found")
-        }
-
-        return res.status(200).json(products)
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json("Internal Server Error")
-    }
-}
 
 exports.getProductsByCollection = async(req,res) => {
     try {

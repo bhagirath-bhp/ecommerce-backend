@@ -31,6 +31,13 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
+      spellId:{
+        type: Sequelize.INTEGER,
+        references:{
+          model: 'spells',
+          key: 'spellId'
+        }
+      },
       price:{
         type:Sequelize.DECIMAL(10,2),
       },

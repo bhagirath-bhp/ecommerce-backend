@@ -9,5 +9,8 @@ exports.calculateAvgRating = async(ratings) => {
             len++
         }
     }
-    return total/len
+    
+    if (total/len > 0) return total/len
+
+    return 0
 }

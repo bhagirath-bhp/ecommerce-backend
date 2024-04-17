@@ -3,38 +3,19 @@ const CartItems = require('../models/cartItems')
 const User = require('../models/user')
 const Product = require('../models/product')
 const Image = require('../models/image')
+const Spell = require('../models/spells')
 
-User.hasOne(Cart,{
-    foreignKey: 'userId',
-    onDelete: 'CASCADE',
-    onUpdate:'CASCADE'
-})
-
-Cart.belongsTo(User,{
-    foreignKey: 'userId'
-})
-
+User.hasOne(Cart,{foreignKey: 'userId', onDelete: 'CASCADE', onUpdate:'CASCADE'})
+Cart.belongsTo(User,{foreignKey: 'userId'})
 CartItems.belongsTo(Product,{foreignKey: 'productId'})
-
-
-Cart.hasMany(CartItems,{
-    foreignKey: 'cartId'
-})
-
-Product.hasMany(Image,{
-    foreignKey: 'productId'
-})
+Cart.hasMany(CartItems,{foreignKey: 'cartId'})
+CartItems.hasOne(Spell, {foreignKey: "spellId"})
+Product.hasMany(Image,{foreignKey: 'productId'})
+Image.belongsTo(Product,{foreignKey:'productId',onDelete: 'CASCADE',onUpdate: 'CASCADE'})
   
-Image.belongsTo(Product,{
-    foreignKey:'productId',
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE'
-})
-  
-
 exports.addToCart = async (req, res) => {
     try {
-        const { userId, productId, quantity } = req.body;
+        const { userId, productId, quantity, spellId } = req.body;
 
         const cart = await Cart.findOne({
             where: {
@@ -50,7 +31,8 @@ exports.addToCart = async (req, res) => {
             const [cartItem] = await CartItems.findOrCreate({
                 where: {
                     cartId: newCart.cartId,
-                    productId
+                    productId,
+                    spellId
                 },
                 defaults: {
                     quantity: quantity > 1 ? quantity : 1
@@ -67,7 +49,8 @@ exports.addToCart = async (req, res) => {
         const [cartItem] = await CartItems.findOrCreate({
             where: {
                 cartId: cart.cartId,
-                productId
+                productId,
+                spellId
             },
             defaults: {
                 quantity: quantity > 1 ? quantity : 1
@@ -113,6 +96,10 @@ exports.getCart = async(req,res) => {
                                 attributes:['imageURL']
                             }]
                         },
+                        {
+                            model: Spell,
+                            attributes: ['name']
+                        }
                     ],
                     attributes:['cartId','quantity']
                 }
@@ -157,6 +144,20 @@ exports.removeFromCart = async(req,res) => {
                 productId
             }
         })
+
+        const cnt = await CartItems.count({
+            where:{
+                "cartId": cartId
+            }
+        })
+
+        if(cnt == 0) {
+            await Cart.destroy({
+                where:{
+                    "cartId": cartId
+                }
+            })
+        }
         return res.status(200).json("item removed from cart")
     } catch (error) {
         console.error(error);
