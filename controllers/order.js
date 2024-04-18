@@ -98,7 +98,7 @@ exports.addOrder = async(req,res) => {
 
         await Cart.destroy({where:{userId}, transaction:t})
         await t.commit()
-        return res.status(200).json({url, message: "order placed"});
+        return res.status(200).json({url, orderId:order.orderId, message: "order placed"});
     } catch (error) {
         console.error(error);
         return res.status(500).json("Internal Server Error")

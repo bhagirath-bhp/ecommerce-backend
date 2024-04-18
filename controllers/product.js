@@ -173,7 +173,7 @@ exports.getAProduct = async(req,res) => {
             include:[
                 {
                     model: Collection,
-                    attributes:['name', 'hasSpells']
+                    attributes:['collectionId', 'name', 'hasSpells']
                 },
                 {
                     model: Image,

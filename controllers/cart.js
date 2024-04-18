@@ -28,9 +28,45 @@ exports.addToCart = async (req, res) => {
                 userId
             });
 
+            if(spellId){
+                const [cartItem] = await CartItems.findOrCreate({
+                    where: {
+                        cartId: newCart.cartId,
+                        productId,
+                        spellId
+                    },
+                    defaults: {
+                        quantity: quantity > 1 ? quantity : 1
+                    }
+                });
+                if (!cartItem) {
+                    return res.status(500).json("Internal Server Error");
+                }
+    
+                return res.status(200).json("Added to cart");
+            }
+            else{
+                const [cartItem] = await CartItems.findOrCreate({
+                    where: {
+                        cartId: newCart.cartId,
+                        productId,
+                    },
+                    defaults: {
+                        quantity: quantity > 1 ? quantity : 1
+                    }
+                });
+                if (!cartItem) {
+                    return res.status(500).json("Internal Server Error");
+                }
+    
+                return res.status(200).json("Added to cart");
+            }
+        }
+        
+        if(spellId){
             const [cartItem] = await CartItems.findOrCreate({
                 where: {
-                    cartId: newCart.cartId,
+                    cartId: cart.cartId,
                     productId,
                     spellId
                 },
@@ -38,33 +74,36 @@ exports.addToCart = async (req, res) => {
                     quantity: quantity > 1 ? quantity : 1
                 }
             });
-
+    
             if (!cartItem) {
                 return res.status(500).json("Internal Server Error");
             }
-
-            return res.status(200).json("Added to cart");
-        }
-
-        const [cartItem] = await CartItems.findOrCreate({
-            where: {
-                cartId: cart.cartId,
-                productId,
-                spellId
-            },
-            defaults: {
-                quantity: quantity > 1 ? quantity : 1
+    
+            if (!cartItem._options.isNewRecord) {
+                await cartItem.update({
+                    quantity: quantity > 1 ? quantity : 1
+                });
             }
-        });
-
-        if (!cartItem) {
-            return res.status(500).json("Internal Server Error");
-        }
-
-        if (!cartItem._options.isNewRecord) {
-            await cartItem.update({
-                quantity: quantity > 1 ? quantity : 1
+        }else{
+            const [cartItem] = await CartItems.findOrCreate({
+                where: {
+                    cartId: cart.cartId,
+                    productId,
+                },
+                defaults: {
+                    quantity: quantity > 1 ? quantity : 1
+                }
             });
+    
+            if (!cartItem) {
+                return res.status(500).json("Internal Server Error");
+            }
+    
+            if (!cartItem._options.isNewRecord) {
+                await cartItem.update({
+                    quantity: quantity > 1 ? quantity : 1
+                });
+            }
         }
 
         return res.status(200).json("Added to cart");
