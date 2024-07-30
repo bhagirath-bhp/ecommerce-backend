@@ -5,10 +5,11 @@ CartItem.hasOne(Spell,{foreignKey: 'spellId'})
 
 exports.addSpell = async(req,res) => {
     try {
-        const {name,description, collectionId} = req.body
+        const {name,description, collectionId} = req.body;
 
         if (!name || !description || !collectionId){
-            return res.status(400).json("name, description or collectionId is missing")
+            // return res.status(400).json("name, description or collectionId is missing")
+            return res.status(400).json(`name, description or collectionId is missing, ${name} : ${description} : ${collectionId}`)
         }
 
         await Spell.create({
